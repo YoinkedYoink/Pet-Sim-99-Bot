@@ -103,11 +103,13 @@ if discordnotify in ('y','n'):
     pass
 else:
     print("bad discord notify value")
+    exit()
 
 if desktopnotify in ('y','n'):
     pass
 else:
     print("bad desktop notify value")
+    exit()
 
 clear()
 
