@@ -133,7 +133,6 @@ if mode == "1":
                             logstable.append("!!ERR Discord Notif!! [" + datetime.datetime.now().strftime("%x %X") + "]")
                     if desktopnotify == "y":
                         os.system("notify-send -u critical -t 5000 \"Pet Sim 99 Bot\" \"A bot has died on desktop "+str(desknum+1)+"\"")
-                        print("sent desktop notif")
                     continue
                 else:
                     if subprocess.check_output("ps "+str(botPIDS[desknum])+" | grep -o -c -E '<defunct>' || true", shell=True, text=True).strip() != "0":
@@ -147,11 +146,8 @@ if mode == "1":
                             except requests.exceptions.HTTPError:
                                 del logstable[0]
                                 logstable.append("!!ERR Discord Notif!! [" + datetime.datetime.now().strftime("%x %X") + "]")
-                            #print("send discord")
-                            #send discord bot notif
                         if desktopnotify == "y":
                             os.system("notify-send -u critical -t 5000 \"Pet Sim 99 Bot\" \"A bot has died on desktop "+str(desknum+1)+"\"")
-                            print("sent desktop notif")
                         continue
 
                 os.system("wmctrl -s "+str(desknum+1))
@@ -192,7 +188,6 @@ elif mode == "2":
                             logstable.append("!!ERR Discord Notif!! [" + datetime.datetime.now().strftime("%x %X") + "]")
                     if desktopnotify == "y":
                         os.system("notify-send -u critical -t 5000 \"Pet Sim 99 Bot\" \"A bot has died on desktop "+str(desknum+1)+"\"")
-                        print("sent desktop notif")
                     continue
                 else:
                     if subprocess.check_output("ps "+str(botPIDS[desknum])+" | grep -o -c -E '<defunct>' || true", shell=True, text=True).strip() != "0":
@@ -208,7 +203,6 @@ elif mode == "2":
                                 logstable.append("!!ERR Discord Notif!! [" + datetime.datetime.now().strftime("%x %X") + "]")
                         if desktopnotify == "y":
                             os.system("notify-send -u critical -t 5000 \"Pet Sim 99 Bot\" \"A bot has died on desktop "+str(desknum+1)+"\"")
-                            print("sent desktop notif")
                         continue
 
                 os.system("wmctrl -s "+str(desknum+1))
