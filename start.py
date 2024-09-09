@@ -4,13 +4,20 @@ import subprocess
 import requests
 import math
 
+
 #SET THESE MANUALLY PLEASEEEEEE
 
 flatpaks_dir = "/home/nord/rblxbots/"
 
+window_manager_cmd = "awesome"
+
+startup_delay = 5
+
 aafk_click_xy = ["1888", "953"]
 
 dice_click_zones = [["613","472"],["960","470"],["1309","747"],["622","706"],["960","709"],["1300","705"]]
+
+auto_join_placeId = "8737899170" # Set to "" to manually join game
 
 #okay that's all you need to set :)
 
@@ -49,11 +56,27 @@ def pretty_print(runs, startepoch, bottable, logstable):
     print(template)
 
 print("Pet Sim 99 Bot\nMade by YoinkedYoink\n\n\n")
+
+
+input("Press enter to start Xypher server: ")
+
+env = os.environ.copy()
+xypher_server = subprocess.Popen(["Xephyr -br -ac -noreset -screen 800x600 -title \"Pet Sim 99 Bot (ctrl+shift to lock keyboard/mouse)\" :7 > /dev/null"], env=env, shell=True)
+
+time.sleep(2)
+
+print("Starting window manager ("+window_manager_cmd+")")
+
+running_wm = subprocess.Popen(["DISPLAY=:7 "+window_manager_cmd+" > /dev/null"], env=env, shell=True)
+
+time.sleep(1)
+
+
 input("Press enter to start bots: ")
 
 clear()
 
-if subprocess.check_output("wmctrl -l | grep -o -c -E '[[:space:]][1-9]{1}[[:space:]]' || true", shell=True, text=True).strip() == "0":
+if subprocess.check_output("DISPLAY=:7 wmctrl -l | grep -o -c -E '[[:space:]][1-9]{1}[[:space:]]' || true", shell=True, text=True).strip() == "0":
     print("Ready to start processes...\n")
 else:
     print("Close all windows in desktops 2-10")
@@ -62,12 +85,15 @@ else:
 botPIDS = []
 
 for i in range(1,10):
-    os.system("wmctrl -s "+str(i))
+    os.system("DISPLAY=:7 wmctrl -s "+str(i))
 
     env = os.environ.copy()
     env["HOME"] = flatpaks_dir+"/"+str(i)+"/"
-    process = subprocess.Popen(["flatpak run org.vinegarhq.Sober > /dev/null"], env=env, shell=True)
-    time.sleep(3)
+    if auto_join_placeId != "":
+        process = subprocess.Popen(["DISPLAY=:7 flatpak run org.vinegarhq.Sober roblox://experiences/start?placeId="+auto_join_placeId+" > /dev/null"], env=env, shell=True)
+    else:
+        process = subprocess.Popen(["DISPLAY=:7 flatpak run org.vinegarhq.Sober > /dev/null"], env=env, shell=True)
+    time.sleep(startup_delay)
     pid = process.pid
 
     process = None
@@ -76,12 +102,12 @@ for i in range(1,10):
     except OSError:
         botPIDS.append("Error")
     else:
-        if subprocess.check_output("ps "+str(pid)+" | grep -o -c -E '<defunct>' || true", shell=True, text=True).strip() == "0":
+        if subprocess.check_output("DISPLAY=:7 ps "+str(pid)+" | grep -o -c -E '<defunct>' || true", shell=True, text=True).strip() == "0":
             botPIDS.append(pid)
         else:
             botPIDS.append("Error")
 
-os.system("wmctrl -s 0")
+os.system("DISPLAY=:7 wmctrl -s 0")
 for desknum in range(len(botPIDS)):
     if botPIDS[desknum] != "Error":
         print("Bot " + str(desknum+1) + colours.HEADER +" [ready]" + colours.END + " ("+str(botPIDS[desknum])+")")
@@ -133,6 +159,7 @@ if mode == "1":
                             logstable.append("!!ERR Discord Notif!! [" + datetime.datetime.now().strftime("%x %X") + "]")
                     if desktopnotify == "y":
                         os.system("notify-send -u critical -t 5000 \"Pet Sim 99 Bot\" \"A bot has died on desktop "+str(desknum+1)+"\"")
+                        print("sent desktop notif")
                     continue
                 else:
                     if subprocess.check_output("ps "+str(botPIDS[desknum])+" | grep -o -c -E '<defunct>' || true", shell=True, text=True).strip() != "0":
@@ -146,20 +173,23 @@ if mode == "1":
                             except requests.exceptions.HTTPError:
                                 del logstable[0]
                                 logstable.append("!!ERR Discord Notif!! [" + datetime.datetime.now().strftime("%x %X") + "]")
+                            #print("send discord")
+                            #send discord bot notif
                         if desktopnotify == "y":
                             os.system("notify-send -u critical -t 5000 \"Pet Sim 99 Bot\" \"A bot has died on desktop "+str(desknum+1)+"\"")
+                            print("sent desktop notif")
                         continue
 
-                os.system("wmctrl -s "+str(desknum+1))
+                os.system("DISPLAY=:7 wmctrl -s "+str(desknum+1))
 
                 time.sleep(1)
 
-                os.system("xdotool mousemove " + aafk_click_xy[0] + " " + aafk_click_xy[1] + " click 1")
+                os.system("DISPLAY=:7 xdotool mousemove " + aafk_click_xy[0] + " " + aafk_click_xy[1] + " click --repeat 3 1")
                 time.sleep(0.2)
-                os.system("xdotool mousemove " + aafk_click_xy[0] + " " + aafk_click_xy[1] + " click 1")
+                os.system("DISPLAY=:7 xdotool mousemove " + aafk_click_xy[0] + " " + aafk_click_xy[1] + " click --repeat 3 1")
                 time.sleep(0.2)
 
-        os.system("wmctrl -s 0")
+        os.system("DISPLAY=:7 wmctrl -s 0")
         runs += 1
 
         del logstable[0]
@@ -188,6 +218,7 @@ elif mode == "2":
                             logstable.append("!!ERR Discord Notif!! [" + datetime.datetime.now().strftime("%x %X") + "]")
                     if desktopnotify == "y":
                         os.system("notify-send -u critical -t 5000 \"Pet Sim 99 Bot\" \"A bot has died on desktop "+str(desknum+1)+"\"")
+                        print("sent desktop notif")
                     continue
                 else:
                     if subprocess.check_output("ps "+str(botPIDS[desknum])+" | grep -o -c -E '<defunct>' || true", shell=True, text=True).strip() != "0":
@@ -203,19 +234,20 @@ elif mode == "2":
                                 logstable.append("!!ERR Discord Notif!! [" + datetime.datetime.now().strftime("%x %X") + "]")
                         if desktopnotify == "y":
                             os.system("notify-send -u critical -t 5000 \"Pet Sim 99 Bot\" \"A bot has died on desktop "+str(desknum+1)+"\"")
+                            print("sent desktop notif")
                         continue
 
-                os.system("wmctrl -s "+str(desknum+1))
+                os.system("DISPLAY=:7 wmctrl -s "+str(desknum+1))
 
                 time.sleep(1)
 
                 for pos in dice_click_zones:
-                    os.system("xdotool mousemove " + pos[0] + " " + pos[1] + " click 1")
+                    os.system("DISPLAY=:7 xdotool mousemove " + pos[0] + " " + pos[1] + " click 1")
                     time.sleep(0.5)
-                    os.system("xdotool mousemove " + pos[0] + " " + pos[1] + " click 1")
+                    os.system("DISPLAY=:7 xdotool mousemove " + pos[0] + " " + pos[1] + " click 1")
                     time.sleep(0.5)
 
-        os.system("wmctrl -s 0")
+        os.system("DISPLAY=:7 wmctrl -s 0")
         runs += 1
 
         del logstable[0]
